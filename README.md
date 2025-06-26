@@ -28,8 +28,22 @@ The application uses a basic rule-based sentiment analysis:
    - Copy `.env.example` to `.env.local` and configure your database URL
 
 3. **Initialize the database**:
-   ```bash
-   npm run init-db
+   Using psql, run the following commands:
+   ```sql
+   CREATE TABLE IF NOT EXISTS users (
+           user_id SERIAL PRIMARY KEY,
+           username VARCHAR(50) UNIQUE NOT NULL,
+   	password VARCHAR (50) NOT NULL,
+           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+         );
+
+   CREATE TABLE IF NOT EXISTS reviews (
+           review_id SERIAL PRIMARY KEY,
+           user_id INTEGER REFERENCES users(user_id),
+           review_text VARCHAR(5000) NOT NULL,
+           sentiment VARCHAR(10) CHECK (sentiment IN ('Positive', 'Negative', 'Neutral')),
+           timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+         );
    ```
 
 4. **Run the application**:
