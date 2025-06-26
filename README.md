@@ -25,7 +25,6 @@ The application uses a basic rule-based sentiment analysis:
 
 2. **Set up PostgreSQL database**:
    - Create a database named `moviesentiment`
-   - Copy `.env.example` to `.env.local` and configure your database URL
 
 3. **Initialize the database**:
    Using psql, run the following commands:
