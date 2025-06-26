@@ -13,6 +13,7 @@ interface Review {
   review_text: string;
   sentiment: string;
   timestamp: string;
+  rating: number;
 }
 
 export default function PreviousReviewsPage() {

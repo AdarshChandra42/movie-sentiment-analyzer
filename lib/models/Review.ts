@@ -14,6 +14,7 @@ export interface CreateReviewData {
   reviewText: string;
   sentiment: 'Positive' | 'Negative' | 'Neutral';
   userId: number;
+  rating: number;
 }
 
 export class ReviewModel {
@@ -21,9 +22,9 @@ export class ReviewModel {
    * Create a new review
    */
   static async create(reviewData: CreateReviewData): Promise<any> {
-    const { reviewText, sentiment, userId } = reviewData;
+    const { reviewText, sentiment, userId, rating } = reviewData;
     
-    const result = await createSentiment(reviewText, sentiment, userId);
+    const result = await createSentiment(reviewText, sentiment, userId, rating);
     return result;
   }
 

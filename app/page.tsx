@@ -60,12 +60,8 @@ export default function HomePage() {
       if (result.success && result.data) {
         // Navigate to results page with analysis results
         const params = new URLSearchParams({
-          sentiment: result.data.sentiment,
+          rating: result.data.rating.toString(),
           review: review,
-          positiveWords: result.data.positiveWords.join(','),
-          negativeWords: result.data.negativeWords.join(','),
-          positiveCount: result.data.positiveCount.toString(),
-          negativeCount: result.data.negativeCount.toString(),
           explanation: result.data.explanation
         });
         
@@ -128,7 +124,7 @@ export default function HomePage() {
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-          Enter your movie review and discover whether it's positive, negative, or neutral
+          Enter your movie review and get an AI-powered rating from 1-5
         </p>
       </div>
 
@@ -162,13 +158,25 @@ export default function HomePage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Analyzing...</span>
+                  <span>Analyzing with AI...</span>
                 </>
               ) : (
-                <span>Analyze Sentiment</span>
+                <span>Analyze with AI</span>
               )}
             </button>
           </form>
+          
+          {/* Rating Scale Info */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Rating Scale:</h3>
+            <div className="text-xs text-gray-600 space-y-1">
+              <div>⭐ 1 = Very Negative</div>
+              <div>⭐⭐ 2 = Negative</div>
+              <div>⭐⭐⭐ 3 = Neutral/Mixed</div>
+              <div>⭐⭐⭐⭐ 4 = Positive</div>
+              <div>⭐⭐⭐⭐⭐ 5 = Very Positive</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

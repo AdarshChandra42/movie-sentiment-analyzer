@@ -68,11 +68,16 @@ export async function validateUserCredentials(username: string, password: string
 }
 
 // Review operations
-export async function createSentiment(review_text: string, sentiment: 'Positive' | 'Negative' | 'Neutral', user_id: number) {
+export async function createSentiment(
+  review_text: string,
+  sentiment: 'Positive' | 'Negative' | 'Neutral',
+  user_id: number,
+  rating: number
+) {
   try {
     const [review] = await sql`
-      INSERT INTO reviews (review_text, sentiment, user_id)
-      VALUES (${review_text}, ${sentiment}, ${user_id})
+      INSERT INTO reviews (review_text, sentiment, user_id, rating)
+      VALUES (${review_text}, ${sentiment}, ${user_id}, ${rating})
       RETURNING *
     `;
     return review;

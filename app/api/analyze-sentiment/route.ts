@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SentimentAnalyzer } from '../../../lib/sentiment-analyzer';
-import { ReviewModel } from '../../../lib/models/Review';
+import { SentimentAnalyzer } from '@/lib/sentiment-analyzer';
+import { ReviewModel } from '@/lib/models/Review';
 
 // Request body interface
 interface AnalyzeSentimentRequest {
@@ -13,11 +13,7 @@ interface AnalyzeSentimentResponse {
   success: boolean;
   data?: {
     reviewText: string;
-    sentiment: 'positive' | 'negative' | 'neutral';
-    positiveWords: string[];
-    negativeWords: string[];
-    positiveCount: number;
-    negativeCount: number;
+    rating: number;
     explanation: string;
   };
   error?: string;
@@ -43,17 +39,27 @@ export async function POST(request: NextRequest): Promise<NextResponse<AnalyzeSe
       }, { status: 400 });
     }
 
-    // Analyze sentiment
-    const sentimentResult = SentimentAnalyzer.analyzeSentiment(reviewText);
+    // Analyze sentiment using ChatGPT
+    const sentimentResult = await SentimentAnalyzer.analyzeSentiment(reviewText);
+
+    // Convert rating to sentiment for database storage
+    let sentimentCategory: 'Negative' | 'Positive' | 'Neutral';
+    if (sentimentResult.rating <= 2) {
+      sentimentCategory = 'Negative';
+    } else if (sentimentResult.rating >= 4) {
+      sentimentCategory = 'Positive';
+    } else {
+      sentimentCategory = 'Neutral';
+    }
 
     // Save to database only if user is logged in
     if (userId) {
       try {
         await ReviewModel.create({
           reviewText,
-          sentiment: sentimentResult.sentiment === 'positive' ? 'Positive' : 
-                    sentimentResult.sentiment === 'negative' ? 'Negative' : 'Neutral',
-          userId
+          sentiment: sentimentCategory,
+          userId,
+          rating: sentimentResult.rating
         });
       } catch (dbError) {
         console.error('Database error while saving review:', dbError);
@@ -65,11 +71,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AnalyzeSe
       success: true,
       data: {
         reviewText,
-        sentiment: sentimentResult.sentiment,
-        positiveWords: sentimentResult.positiveWords,
-        negativeWords: sentimentResult.negativeWords,
-        positiveCount: sentimentResult.positiveCount,
-        negativeCount: sentimentResult.negativeCount,
+        rating: sentimentResult.rating,
         explanation: sentimentResult.explanation
       }
     });
@@ -95,12 +97,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<AnalyzeSe
 export async function GET(): Promise<NextResponse> {
   return NextResponse.json({
     message: 'Movie Review Sentiment Analysis API',
-    version: '1.0.0',
+    version: '2.0.0',
     endpoint: {
       POST: {
-        description: 'Analyze sentiment of movie review text',
+        description: 'Analyze sentiment of movie review text using ChatGPT',
         usage: 'POST { reviewText: string }',
-        returns: 'Sentiment result (positive, negative, or neutral)'
+        returns: 'Rating from 1-5 (1=very negative, 5=very positive) with explanation'
       }
     }
   });

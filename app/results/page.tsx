@@ -7,30 +7,28 @@ function ResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const sentiment = searchParams.get('sentiment') || 'neutral';
+  const rating = parseInt(searchParams.get('rating') || '3');
   const review = searchParams.get('review') || '';
-  const positiveWords = searchParams.get('positiveWords')?.split(',').filter(w => w) || [];
-  const negativeWords = searchParams.get('negativeWords')?.split(',').filter(w => w) || [];
-  const positiveCount = parseInt(searchParams.get('positiveCount') || '0');
-  const negativeCount = parseInt(searchParams.get('negativeCount') || '0');
   const explanation = searchParams.get('explanation') || '';
 
-  const getSentimentData = () => {
-    if (sentiment === 'positive') {
+  const getRatingData = () => {
+    if (rating >= 4) {
       return {
         color: 'text-green-600',
         bgColor: 'bg-green-50',
         borderColor: 'border-green-200',
         icon: '😊',
-        title: 'Positive Sentiment'
+        title: 'Positive Review',
+        sentiment: 'positive'
       };
-    } else if (sentiment === 'negative') {
+    } else if (rating <= 2) {
       return {
         color: 'text-red-600',
         bgColor: 'bg-red-50',
         borderColor: 'border-red-200',
         icon: '😞',
-        title: 'Negative Sentiment'
+        title: 'Negative Review',
+        sentiment: 'negative'
       };
     } else {
       return {
@@ -38,12 +36,28 @@ function ResultsContent() {
         bgColor: 'bg-yellow-50',
         borderColor: 'border-yellow-200',
         icon: '😐',
-        title: 'Neutral Sentiment'
+        title: 'Neutral Review',
+        sentiment: 'neutral'
       };
     }
   };
 
-  const sentimentData = getSentimentData();
+  const getStarRating = () => {
+    return '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
+  };
+
+  const getRatingDescription = () => {
+    switch (rating) {
+      case 1: return 'Very Negative';
+      case 2: return 'Negative';
+      case 3: return 'Neutral/Mixed';
+      case 4: return 'Positive';
+      case 5: return 'Very Positive';
+      default: return 'Unknown';
+    }
+  };
+
+  const ratingData = getRatingData();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -54,17 +68,21 @@ function ResultsContent() {
             Analysis Complete!
           </h1>
           <p className="text-lg text-gray-600">
-            Here's the sentiment analysis of your movie review
+            Here's your AI-powered sentiment analysis
           </p>
         </div>
 
         {/* Main Result */}
-        <div className={`bg-white rounded-xl shadow-lg p-8 ${sentimentData.bgColor} ${sentimentData.borderColor} border-2 mb-8`}>
+        <div className={`bg-white rounded-xl shadow-lg p-8 ${ratingData.bgColor} ${ratingData.borderColor} border-2 mb-8`}>
           <div className="text-center">
-            <div className="text-6xl mb-4">{sentimentData.icon}</div>
-            <h2 className={`text-3xl font-bold ${sentimentData.color} mb-4`}>
-              {sentimentData.title}
+            <div className="text-6xl mb-4">{ratingData.icon}</div>
+            <h2 className={`text-3xl font-bold ${ratingData.color} mb-4`}>
+              {ratingData.title}
             </h2>
+            <div className="text-4xl mb-4">{getStarRating()}</div>
+            <div className={`text-xl font-semibold ${ratingData.color} mb-4`}>
+              Rating: {rating}/5 ({getRatingDescription()})
+            </div>
             <p className="text-lg text-gray-700 mb-4">
               {explanation}
             </p>
@@ -79,51 +97,35 @@ function ResultsContent() {
           </div>
         </div>
 
-        {/* Word Analysis */}
+        {/* Rating Breakdown */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            Detected Words
+            Rating Breakdown
           </h3>
           
-          {positiveWords.length > 0 && (
-            <div className="mb-4">
-              <div className="text-sm font-medium text-green-700 mb-2">
-                Positive Words ({positiveCount}):
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {positiveWords.map((word, index) => (
-                  <span 
-                    key={index}
-                    className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700"
-                  >
-                    {word}
+          <div className="space-y-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <div key={star} className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  {star} Star{star !== 1 ? 's' : ''} - {
+                    star === 1 ? 'Very Negative' :
+                    star === 2 ? 'Negative' :
+                    star === 3 ? 'Neutral/Mixed' :
+                    star === 4 ? 'Positive' :
+                    'Very Positive'
+                  }
+                </span>
+                <div className="flex items-center">
+                  <div className={`w-4 h-4 rounded-full ${
+                    rating === star ? 'bg-blue-500' : 'bg-gray-200'
+                  }`}></div>
+                  <span className="ml-2 text-sm text-gray-600">
+                    {rating === star ? '✓ Your Rating' : ''}
                   </span>
-                ))}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {negativeWords.length > 0 && (
-            <div className="mb-4">
-              <div className="text-sm font-medium text-red-700 mb-2">
-                Negative Words ({negativeCount}):
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {negativeWords.map((word, index) => (
-                  <span 
-                    key={index}
-                    className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700"
-                  >
-                    {word}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {positiveWords.length === 0 && negativeWords.length === 0 && (
-            <p className="text-gray-500">No sentiment words detected in this review.</p>
-          )}
+            ))}
+          </div>
         </div>
 
         {/* Actions */}
