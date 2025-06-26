@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movie Sentiment Analyzer
 
-## Getting Started
+A simple web application that analyzes the sentiment of movie reviews using a rule-based approach.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Home Page**: Enter a movie review and get instant sentiment analysis
+- **Results Page**: View whether the review is Positive, Negative, or Neutral with explanations
+- **Database Storage**: Reviews and their sentiment results are stored with timestamps
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How It Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application uses a basic rule-based sentiment analysis:
+1. Maintains lists of positive and negative words
+2. Counts positive and negative words in the review
+3. Determines sentiment based on which type has more words
+4. Provides explanations for the analysis results
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Set up PostgreSQL database**:
+   - Create a database named `moviesentiment`
+   - Copy `.env.example` to `.env.local` and configure your database URL
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Initialize the database**:
+   ```bash
+   npm run init-db
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run the application**:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+5. **Open** [http://localhost:3000](http://localhost:3000) in your browser
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Endpoint
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **POST** `/api/analyze-sentiment`
+  - Body: `{ "reviewText": "Your movie review here" }`
+  - Returns: Sentiment analysis with positive/negative word counts and explanation
+
+That's it! The application is intentionally simple and focused on the core requirements.
