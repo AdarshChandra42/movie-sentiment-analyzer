@@ -46,12 +46,18 @@ The application uses a basic rule-based sentiment analysis:
          );
    ```
 
-4. **Run the application**:
+4. **Create environment file**:
+   Create a `.env.local` file in the root directory and add your database connection string:
+   ```
+   POSTGRES_URL="postgresql://username:password@host:port/database_name"
+   ```
+
+5. **Run the application**:
    ```bash
    npm run dev
    ```
 
-5. **Open** [http://localhost:3000](http://localhost:3000) in your browser
+6. **Open** [http://localhost:3000](http://localhost:3000) in your browser
 
 ## API Endpoint
 
