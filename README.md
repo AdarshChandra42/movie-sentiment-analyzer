@@ -2,6 +2,8 @@
 
 A simple web application that analyzes the sentiment of movie reviews using a rule-based approach.
 
+deployed on https://movie-sentiment-analyzer-xihy.onrender.com/
+
 ## Features
 
 - **Home Page**: Enter a movie review and get instant sentiment analysis
